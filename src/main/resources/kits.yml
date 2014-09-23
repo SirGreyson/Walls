@@ -1,0 +1,32 @@
+### HazeWalls Kit Configuration ###
+
+### List of Materials: http://jd.bukkit.org/rb/apidocs/org/bukkit/Material.html ###
+### List of Color Codes: http://minecraft.gamepedia.com/Formatting_codes#Color_codes ###
+
+## The Kit's name or ID ##
+default:
+  # Permission node required to use this Kit #
+  # Type 'none' if no permission node is needed #
+  permission: none
+  # Material of the icon for this Kit in the menu #
+  iconMaterial: WOOD
+  # Display name for this Kit in menu/messages #
+  displayName: '&6Default Kit'
+  # List of items that are given with this Kit #
+  # Item format: 'MATERIAL:AMOUNT[:DISPLAYNAME][:LORE|LORE2...]' #
+  # EXAMPLE: 'DIRT:1:&6Rare Dirt:&aRight click to place|&aLeft click to hit'
+  kitItems:
+  - 'APPLE:3'
+  - 'LEATHER_CHESTPLATE:1'
+  - 'LEATHER_LEGGINGS:1'
+  - 'STONE_SWORD:1:&cOld Faithful'
+  
+special:
+  permission: walls.kits.special
+  iconMaterial: GOLD_INGOT
+  displayName: '&bSpecial Kit'
+  kitItems:
+  - 'DIAMOND_CHESTPLATE:1'
+  - 'DIAMOND_HELMET:1'
+  - 'DIAMOND_SWORD:1:&5Special Sword'
+  

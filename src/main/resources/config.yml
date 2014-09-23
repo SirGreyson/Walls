@@ -1,0 +1,64 @@
+####################################
+###  Walls Plugin Configuration  ###
+####################################
+
+## Prefix for PRIVATE/PLAYER messages sent by the plugin ##
+MESSAGE_PREFIX: '&7[&6Walls&7]&r'
+## Prefix for PUBLIC/BROADCAST messages sent by the plugin ##
+BROADCAST_PREFIX: '&7&l[&6&lWalls&7&l]&r'
+
+## Main World where players should spawn on join ##
+SPAWN_WORLD: world
+## Command to run at the end of the RESETTING phase ##
+RESET_COMMAND: 'restart'
+
+## Minimum number of Players needed to begin STARTING countdown ##
+MIN_PLAYERS_TO_START: 20
+## Maximum number of Players allowed per-Team ##
+TEAM_MAX_PLAYERS: 10
+
+## Amount of time (in seconds) before the Game goes from STARTING to RUNNING ##
+## This countdown will be stopped if the number of players goes below MIN_PLAYERS_TO_START ##
+STARTING_COUNTDOWN: 60
+## Amount of time (in seconds) before the Walls drop in the current Arena ##
+WALL_COUNTDOWN: 480
+## Amount of time (in seconds) before the Game automatically ends ## 
+RUNNING_COUNTDOWN: 1500
+## Amount of time (in seconds) before the server restarts after a Game is finished ##
+FINISHING_COUNTDOWN: 30
+
+## Title displayed at the top of the Kit Menu ##
+KIT_MENU_TITLE: '&aKit Selection Menu'
+## Size of the Kit Menu inventory ##
+## This value MUST be a multiple of 9 and ##
+## it MUST be greater than the total number of Kits ##
+KIT_MENU_SIZE: 9
+## Title displayed at the top of the Team Menu ##
+TEAM_MENU_TITLE: '&bTeam Selection Menu'
+
+## Title displayed on the in-game scoreboard ##
+## You can use the following formatting codes: ##
+## %arena% - The display name of the current Arena ##
+## %time% = time left in the game ##
+GAME_BOARD_TITLE: '%arena% &6- %time%'
+## Formatting for in-game scoreboard ## 
+## You can use the following formatting codes: ##
+## %time% = time left in the game ##
+## %redteam% = the amount of players left on the RED Team ##
+## %blueteam% = the amount of players left on the BLUE Team ##
+## %greenteam% = the amount of players left on the GREEN Team ##
+## %yellowteam% = the amount of players left on the YELLOW Team ##
+GAME_BOARD_FORMAT:
+# NOTICE: When adding blank lines, each line must have 1 extra SPACE to be displayed #
+- ''
+- '&cRed Team:'
+- '%redteam%'
+- ' '
+- '&9Blue Team:'
+- '%blueteam%'
+- '   '
+- '&aGreen Team:'
+- '%greenteam%'
+- '    '
+- '&eYellow Team:'
+- '%yellowteam%'

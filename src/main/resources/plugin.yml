@@ -1,0 +1,8 @@
+name: Walls
+version: 1.0
+description: Walls plugin for McHaze Network
+author: SirReason
+
+main: com.mchaze.walls.Walls
+#TODO: Add Multiverse dependency
+depend: [WorldEdit]

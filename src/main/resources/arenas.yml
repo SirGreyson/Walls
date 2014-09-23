@@ -1,0 +1,20 @@
+### HazeWalls Arena Configuration ###
+
+## The ID of the Arena ##
+Test:
+  # The name of the World (and World folder) for this Arena #
+  worldName: ArenaWorld
+  # List of WorldEdit regions containing the Wall(s) and its base(s) #
+  wallZones:
+  - -468,3,-637/-436,3,-637
+  - -452,3,-653/-452,3,-621
+  # The display name of this Arena #
+  displayName: '&bTest Arena'
+  # The Material to remove inside the wallZones when the walls drop #
+  wallBaseMaterial: BEDROCK
+  # Spawn points for each Team #
+  teamSpawns:
+    BLUE: ArenaWorld,-438,4,-651
+    YELLOW: ArenaWorld,-466,4,-623
+    GREEN: ArenaWorld,-438,4,-623
+    RED: ArenaWorld,-466,4,-651
