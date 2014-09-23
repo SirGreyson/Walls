@@ -9,6 +9,8 @@ BROADCAST_PREFIX: '&7&l[&6&lWalls&7&l]&r'
 
 ## Main World where players should spawn on join ##
 SPAWN_WORLD: world
+## Number of Tokens to give to all remaining players on the winning Team ##
+WINNER_TOKENS: 15
 ## Command to run at the end of the RESETTING phase ##
 RESET_COMMAND: 'restart'
 

@@ -25,10 +25,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Team;
 
@@ -51,52 +48,50 @@ public class PlayerListener implements Listener {
         resetPlayer(e.getPlayer(), true);
         if(game.getStage() == GameStage.RUNNING) game.setSpectator(e.getPlayer());
         else if(game.getStage() == GameStage.WAITING && game.canStart()) game.tryStart(false);
-        e.setJoinMessage(game.getStage() == GameStage.RUNNING ? StringUtil.color("&b" + e.getPlayer().getName() + " &ehas joined the game! &c" + game.getPlayersNeeded() + " &emore players needed to start!") : null);
+        e.setJoinMessage(game.getStage() == GameStage.WAITING ? StringUtil.color("&b" + e.getPlayer().getName() + " &ehas joined the game! &c" + game.getPlayersNeeded() + " &emore players needed to start!") : null);
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerLeave(PlayerQuitEvent e) {
-        if(e.getPlayer().isOp()) return;
         resetPlayer(e.getPlayer(), true);
         game.removePlayer(e.getPlayer());
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent e) {
-        if(game.getStage() != GameStage.RUNNING) e.setCancelled(true);
+        if(game.getStage() != GameStage.RUNNING && !e.getPlayer().isOp()) e.setCancelled(true);
         else if(e.getBlock().getType() != Material.FURNACE && e.getBlock().getType() != Material.CHEST) return;
-        game.addProtection(e.getBlock(), e.getPlayer());
+        else game.addProtection(e.getBlock(), e.getPlayer());
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent e) {
-        if(game.getStage() != GameStage.RUNNING) e.setCancelled(true);
-        else if(game.getCurrentArena().isWallZone(e.getBlock().getLocation())) e.setCancelled(true);
-        else if(game.isProtected(e.getBlock()) && (e.getBlock().getType() == Material.FURNACE || e.getBlock().getType() == Material.CHEST)) {
-            if(game.getProtectionOwner(e.getBlock()) == e.getPlayer()) {
-                game.removeProtection(e.getBlock());
-                Messaging.send(e.getPlayer(), "&aSuccessfully removed your protected &e" + e.getBlock().getType());
-            } else {
-                e.setCancelled(true);
-                Messaging.send(e.getPlayer(), "&cThis &e" + e.getBlock().getType() + " &cbelongs to &e" + game.getProtectionOwner(e.getBlock()).getName());
-            }
+        if(game.getStage() != GameStage.RUNNING && !e.getPlayer().isOp()) e.setCancelled(true);
+        else if(game.isProtectedWall(e.getBlock())) e.setCancelled(true);
+        else if(game.isProtected(e.getBlock())) {
+            Messaging.send(e.getPlayer(), game.isOwner(e.getBlock(), e.getPlayer())
+                    ? "&aSuccessfully removed your protected &e" + e.getBlock().getType()
+                    : "&cThis &e" + e.getBlock().getType() + " &cbelongs to &e" + game.getProtectionOwner(e.getBlock()).getName());
+            if(game.isOwner(e.getBlock(), e.getPlayer())) game.removeProtection(e.getBlock());
+            else e.setCancelled(true);
         }
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent e) {
         if(game.isSpectator(e.getPlayer())) e.setCancelled(true);
-        else if(e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        else if(e.getClickedBlock().getType() != Material.CHEST && e.getClickedBlock().getType() != Material.FURNACE) return;
-        else if(game.isProtected(e.getClickedBlock()) && game.getProtectionOwner(e.getClickedBlock()) != e.getPlayer()) {
+        if(e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if(e.getClickedBlock().getType() != Material.CHEST && e.getClickedBlock().getType() != Material.FURNACE) return;
+        else if(game.isProtected(e.getClickedBlock()) && !game.isOwner(e.getClickedBlock(), e.getPlayer())) {
             e.setCancelled(true);
             Messaging.send(e.getPlayer(), "&cThis &e" + e.getClickedBlock().getType() + " &cbelongs to &e" + game.getProtectionOwner(e.getClickedBlock()).getName());
         }
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent e) {
-        if(e.getEntity() instanceof Player && game.isSpectator((Player) e.getEntity())) e.setCancelled(true);
+        if(e.getEntity() instanceof Player && game.getStage() != GameStage.RUNNING) e.setCancelled(true);
+        else if(e.getEntity() instanceof Player && game.isSpectator((Player) e.getEntity())) e.setCancelled(true);
         else if(e instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
             if(event.getDamager() instanceof Player && game.isSpectator((Player) event.getDamager())) e.setCancelled(true);
@@ -108,9 +103,19 @@ public class PlayerListener implements Listener {
         Team team = game.getTeam(e.getEntity());
         Team team2 = game.getTeam(e.getEntity().getKiller());
         e.setDeathMessage(team == null || team2 == null ? null :
-                ChatColor.valueOf(team.getName()) + e.getEntity().getName() + " &bwas killed by " + ChatColor.valueOf(team2.getName()) + e.getEntity().getKiller().getName());
+                StringUtil.color(ChatColor.valueOf(team.getName()) + e.getEntity().getName() + " &bwas killed by " + ChatColor.valueOf(team2.getName()) + e.getEntity().getKiller().getName()));
         resetPlayer(e.getEntity(), false);
         game.setSpectator(e.getEntity());
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onPlayerChat(AsyncPlayerChatEvent e) {
+        Team team = game.getTeam(e.getPlayer());
+        if(team == null || game.getStage() != GameStage.RUNNING) return;
+        e.setCancelled(true);
+        if(e.getMessage().startsWith("!"))
+            Messaging.sendGlobalChat(ChatColor.valueOf(team.getName()) + "" + e.getPlayer().getName(), e.getMessage().replaceFirst("!", ""));
+        else Messaging.sendTeamChat(team, e.getMessage());
     }
 
     public static void resetPlayer(Player player, boolean doTeleport) {
@@ -123,6 +128,6 @@ public class PlayerListener implements Listener {
             player.removePotionEffect(pe.getType());
         player.setExp(0);
         player.setTotalExperience(0);
-        player.teleport(Bukkit.getWorld(Settings.SPAWN_WORLD.asString()).getSpawnLocation());
+        if(doTeleport) player.teleport(Bukkit.getWorld(Settings.SPAWN_WORLD.asString()).getSpawnLocation());
     }
 }

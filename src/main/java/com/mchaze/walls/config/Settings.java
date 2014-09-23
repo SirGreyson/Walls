@@ -18,6 +18,7 @@ public enum Settings {
     BROADCAST_PREFIX,
 
     SPAWN_WORLD,
+    WINNER_TOKENS,
     RESET_COMMAND,
 
     MIN_PLAYERS_TO_START,

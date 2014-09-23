@@ -118,10 +118,10 @@ public class StringUtil {
         List<String> output = new ArrayList<String>();
         for (String i : input)
             output.add(i.replace("%time%", formatTime(game.getCountdown()))
-                    .replace("%redteam%", asString(game.getTeamSize("RED")))
-                    .replace("%blueteam%", asString(game.getTeamSize("BLUE")))
-                    .replace("%greenteam%", asString(game.getTeamSize("GREEN")))
-                    .replace("%yellowteam%", asString(game.getTeamSize("YELLOW"))));
+                    .replace("%redteam%", ChatColor.RED + "" + game.getTeamSize("RED"))
+                    .replace("%blueteam%", ChatColor.BLUE + "" + game.getTeamSize("BLUE"))
+                    .replace("%greenteam%", ChatColor.GREEN + "" + game.getTeamSize("GREEN"))
+                    .replace("%yellowteam%", ChatColor.YELLOW + "" + game.getTeamSize("YELLOW")));
         return Lists.reverse(output);
     }
 }

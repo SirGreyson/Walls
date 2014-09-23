@@ -56,7 +56,8 @@ public class GameTimer {
                     countdown2--;
                     game.updateGameBoard();
                     if (countdown <= 0) game.finishGame();
-                    if(countdown2 <= 0) game.doWallDrop();
+                    if(countdown2 < 0) return;
+                    else if(countdown2 == 0) game.doWallDrop();
                     else if(countdown2 % 30 == 0) Messaging.broadcast("&aWalls dropping in &e" + countdown2 + " &aseconds!");
                 }
             }.runTaskTimer(plugin, 20, 20);

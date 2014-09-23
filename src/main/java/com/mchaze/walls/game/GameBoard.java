@@ -53,7 +53,7 @@ public class GameBoard {
         gameObj.setDisplayName(StringUtil.formatBoardTitle(game, Settings.GAME_BOARD_TITLE.asString()));
         for (String score : gameBoard.getEntries()) gameBoard.resetScores(score);
         List<String> vars = StringUtil.formatBoardVars(game, Settings.GAME_BOARD_FORMAT.asList());
-        for (int i = 0; i < vars.size(); i++) gameObj.getScore(vars.get(i)).setScore(i);
+        for (int i = 0; i < vars.size(); i++) gameObj.getScore(vars.get(i)).setScore(i + 1);
     }
 
     public Set<Team> getTeams() {

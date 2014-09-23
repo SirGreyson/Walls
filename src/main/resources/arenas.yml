@@ -6,8 +6,8 @@ Test:
   worldName: ArenaWorld
   # List of WorldEdit regions containing the Wall(s) and its base(s) #
   wallZones:
-  - -468,3,-637/-436,3,-637
-  - -452,3,-653/-452,3,-621
+  - -468,1,-637/-436,3,-637
+  - -452,1,-653/-452,3,-621
   # The display name of this Arena #
   displayName: '&bTest Arena'
   # The Material to remove inside the wallZones when the walls drop #

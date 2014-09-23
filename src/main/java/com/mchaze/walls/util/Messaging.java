@@ -9,7 +9,9 @@ package com.mchaze.walls.util;
 import com.mchaze.walls.config.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.scoreboard.Team;
 
 import java.util.logging.Logger;
 
@@ -28,6 +30,16 @@ public class Messaging {
     public static void broadcast(String message) {
         if (BROADCAST_PREFIX == null) BROADCAST_PREFIX = Settings.BROADCAST_PREFIX.asString();
         Bukkit.broadcastMessage(StringUtil.color(BROADCAST_PREFIX + " " + message));
+    }
+
+    public static void sendTeamChat(Team team, String message) {
+        for(OfflinePlayer player : team.getPlayers())
+            if(player.getPlayer() != null)
+                player.getPlayer().sendMessage(StringUtil.color(ChatColor.valueOf(team.getName()) + "[" + team.getName() + "] " + player.getName() + "&7: " + message));
+    }
+
+    public static void sendGlobalChat(String playerName, String message) {
+        Bukkit.broadcastMessage(StringUtil.color("&6[G] " + playerName + "&7: " + message));
     }
 
     public static void printInfo(String message) {

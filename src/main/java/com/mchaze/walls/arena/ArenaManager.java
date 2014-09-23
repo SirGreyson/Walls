@@ -89,7 +89,7 @@ public class ArenaManager {
         else if(!FileUtil.copy(templateDir, new File(rootDir, arena.getWorldName())))
             Messaging.printErr("Error! Template for Arena [" + arena.getArenaID() + "] could not be copied!");
         else plugin.getServer().createWorld(new WorldCreator(arena.getWorldName()));
-        return arena.getWorld() != null; //TODO If successful, print message
+        return arena.getWorld() != null;
     }
 
     public void unloadArenaWorld(Arena arena) {

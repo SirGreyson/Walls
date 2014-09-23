@@ -11,6 +11,7 @@ import com.mchaze.walls.arena.ArenaManager;
 import com.mchaze.walls.config.Settings;
 import com.mchaze.walls.kit.KitManager;
 import com.mchaze.walls.util.Messaging;
+import me.lordal.haze.tokens.api.TokensAPI;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Firework;
@@ -41,6 +42,10 @@ public class Game {
 
     public Arena getCurrentArena() {
         return currentArena;
+    }
+
+    public boolean isProtectedWall(Block block) {
+        return currentArena.isWallZone(block.getLocation()) && gameTimer.getCountdown() <= Settings.RUNNING_COUNTDOWN.asInt() - Settings.WALL_COUNTDOWN.asInt();
     }
 
     public void updateGameBoard() {
@@ -81,14 +86,16 @@ public class Game {
         player.teleport(currentArena.getWorld().getSpawnLocation());
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false));
         player.setGameMode(GameMode.ADVENTURE);
-        player.setFlying(true);
         player.setAllowFlight(true);
+        player.setFlying(true);
         Messaging.send(player, "&cYou are now spectating!");
     }
 
     public boolean isProtected(Block block) {
         return protections.containsKey(block.getLocation());
     }
+
+    public boolean isOwner(Block block, Player player) { return protections.get(block.getLocation()).equals(player.getUniqueId()); }
 
     public Player getProtectionOwner(Block block) {
         return Bukkit.getPlayer(protections.get(block.getLocation()));
@@ -152,7 +159,17 @@ public class Game {
     public void finishGame() {
         Team winningTeam = gameBoard.getLargestTeam();
         Messaging.broadcast("&aGame Over! " + winningTeam.getDisplayName() + " &awins!");
+        Messaging.broadcast("&aServer will restart in &e" + Settings.FINISHING_COUNTDOWN.asInt() + " seconds&a!");
         setStage(GameStage.FINISHING);
+        giveTokens(winningTeam);
+    }
+
+    private void giveTokens(Team team) {
+        for(OfflinePlayer player : team.getPlayers()) {
+            if(player.getPlayer() == null) continue;
+            Messaging.send(player.getPlayer(), "&aYou have been rewarded &e" + Settings.WINNER_TOKENS.asInt() + " Tokens&a!");
+            TokensAPI.depositTokens(player.getPlayer(), Settings.WINNER_TOKENS.asInt());
+        }
     }
 
     public void doFireworks() {

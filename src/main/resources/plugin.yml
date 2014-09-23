@@ -4,5 +4,4 @@ description: Walls plugin for McHaze Network
 author: SirReason
 
 main: com.mchaze.walls.Walls
-#TODO: Add Multiverse dependency
-depend: [WorldEdit]
+depend: [HazeTokens, WorldEdit]

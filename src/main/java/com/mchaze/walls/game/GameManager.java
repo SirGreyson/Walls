@@ -24,7 +24,7 @@ public class GameManager {
         Arena activeArena = ArenaManager.getInstance().getRandomArena();
         if (activeArena == null) Messaging.printErr("No Arenas loaded! Plugin cannot run...");
         else {
-            ArenaManager.getInstance().loadArenaWorld(activeArena);
+            if(!ArenaManager.getInstance().loadArenaWorld(activeArena)) return;
             activeArena.loadSpawns();
             activeGame = new Game(plugin, activeArena);
             Messaging.printInfo("Game successfully loaded and ready to go!");
