@@ -45,7 +45,7 @@ public class Game {
     }
 
     public boolean isProtectedWall(Block block) {
-        return currentArena.isWallZone(block.getLocation()) && gameTimer.getCountdown() <= Settings.RUNNING_COUNTDOWN.asInt() - Settings.WALL_COUNTDOWN.asInt();
+        return currentArena.isWallZone(block.getLocation()) && gameTimer.getCountdown() >= Settings.RUNNING_COUNTDOWN.asInt() - Settings.WALL_COUNTDOWN.asInt();
     }
 
     public void updateGameBoard() {
@@ -57,6 +57,7 @@ public class Game {
     }
 
     public Team getTeam(Player player) {
+        if(player == null) return null;
         return gameBoard.getPlayerTeam(player);
     }
 
@@ -75,6 +76,8 @@ public class Game {
     public int getCountdown() {
         return gameTimer.getCountdown();
     }
+
+    public List<UUID> getSpectators() { return spectators; }
 
     public boolean isSpectator(Player player) {
         return spectators.contains(player.getUniqueId());
@@ -148,6 +151,7 @@ public class Game {
     }
 
     public void doWallDrop() {
+        gameTimer.setCountdown2(-1);
         currentArena.doWallDrop();
         Messaging.broadcast("&aThe Walls are coming down... Get ready to fight!");
     }

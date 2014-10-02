@@ -15,17 +15,20 @@ import com.mchaze.walls.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Team;
 
@@ -102,20 +105,38 @@ public class PlayerListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent e) {
         Team team = game.getTeam(e.getEntity());
         Team team2 = game.getTeam(e.getEntity().getKiller());
-        e.setDeathMessage(team == null || team2 == null ? null :
+        e.setDeathMessage(team == null || team2 == null ?
+                (team != null ? StringUtil.color(ChatColor.valueOf(team.getName()) + e.getEntity().getName() + "died.") : null) :
                 StringUtil.color(ChatColor.valueOf(team.getName()) + e.getEntity().getName() + " &bwas killed by " + ChatColor.valueOf(team2.getName()) + e.getEntity().getKiller().getName()));
+        for(ItemStack i : e.getDrops())
+            if(i != null && i.getType() != Material.AIR) e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), i);
         resetPlayer(e.getEntity(), false);
         game.setSpectator(e.getEntity());
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerChat(AsyncPlayerChatEvent e) {
-        Team team = game.getTeam(e.getPlayer());
-        if(team == null || game.getStage() != GameStage.RUNNING) return;
-        e.setCancelled(true);
-        if(e.getMessage().startsWith("!"))
-            Messaging.sendGlobalChat(ChatColor.valueOf(team.getName()) + "" + e.getPlayer().getName(), e.getMessage().replaceFirst("!", ""));
-        else Messaging.sendTeamChat(team, e.getMessage());
+        if(game.isSpectator(e.getPlayer())) Messaging.sendSpectatorChat(e.getPlayer().getName(), e.getMessage());
+        else {
+            Team team = game.getTeam(e.getPlayer());
+            if(team == null || game.getStage() != GameStage.RUNNING) return;
+            e.setCancelled(true);
+            if(e.getMessage().startsWith("!"))
+                Messaging.sendGlobalChat(ChatColor.valueOf(team.getName()) + "" + e.getPlayer().getName(), e.getMessage().replaceFirst("!", ""));
+            else Messaging.sendTeamChat(team, e.getMessage());
+        }
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onPistonExtend(BlockPistonExtendEvent e) {
+        if(game.getStage() == GameStage.RUNNING && game.getCurrentArena().getWorldName().equalsIgnoreCase(e.getBlock().getWorld().getName()))
+            for(Block block : e.getBlocks())
+                if(game.isProtectedWall(block)) e.setCancelled(true);
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onPlayerDropItem(PlayerDropItemEvent e) {
+        if(game.isSpectator(e.getPlayer())) e.setCancelled(true);
     }
 
     public static void resetPlayer(Player player, boolean doTeleport) {

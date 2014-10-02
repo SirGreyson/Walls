@@ -7,12 +7,14 @@
 package com.mchaze.walls.util;
 
 import com.mchaze.walls.config.Settings;
+import com.mchaze.walls.game.GameManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scoreboard.Team;
 
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public class Messaging {
@@ -40,6 +42,11 @@ public class Messaging {
 
     public static void sendGlobalChat(String playerName, String message) {
         Bukkit.broadcastMessage(StringUtil.color("&6[G] " + playerName + "&7: " + message));
+    }
+
+    public static void sendSpectatorChat(String playerName, String message) {
+        for(UUID uuid : GameManager.getInstance().getGame().getSpectators())
+            if(Bukkit.getPlayer(uuid) != null) Bukkit.getPlayer(uuid).sendMessage(StringUtil.color("&8[Spectator] " + playerName + ": &7" + message));
     }
 
     public static void printInfo(String message) {
