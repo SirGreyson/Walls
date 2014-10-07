@@ -13,4 +13,10 @@ public enum GameStage {
     public boolean isRunnable() {
         return this == STARTING || this == FORCE_STARTING || this == RUNNING || this == FINISHING;
     }
+
+    public String asString() {
+        if(this == WAITING || this == STARTING || this == FORCE_STARTING) return "&aLOBBY";
+        else if(this == RUNNING) return "&cIN GAME";
+        else return "&eFINISHING";
+    }
 }

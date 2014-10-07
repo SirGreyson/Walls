@@ -121,6 +121,8 @@ public class Game {
         Team team = gameBoard.addPlayer(player);
         if (team == null) setSpectator(player);
         else {
+            player.setFoodLevel(20);
+            player.setSaturation(4f);
             player.teleport(currentArena.getTeamSpawn(team.getName()));
             KitManager.getInstance().getSelectedKit(player).equipPlayer(player);
             Messaging.send(player, "&aYou have joined the " + team.getDisplayName());
@@ -190,6 +192,7 @@ public class Game {
         setStage(GameStage.RESETTING);
         for (Player player : Bukkit.getOnlinePlayers()) PlayerListener.resetPlayer(player, true);
         ArenaManager.getInstance().unloadArenaWorld(currentArena);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.RESET_COMMAND.toString());
+        Messaging.printInfo("Running Reset Command [" + Settings.RESET_COMMAND.asString() + "]");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.RESET_COMMAND.asString());
     }
 }

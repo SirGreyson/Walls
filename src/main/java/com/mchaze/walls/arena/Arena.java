@@ -86,7 +86,7 @@ public class Arena {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++)
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     Block block = getWorld().getBlockAt(x, y, z);
-                    if (block.getType() == type) block.setType(Material.AIR);
+                    if (block.getType() != type) block.setTypeIdAndData(0, (byte) 0, false);
                 }
     }
 

@@ -26,8 +26,10 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Team;
@@ -106,25 +108,25 @@ public class PlayerListener implements Listener {
         Team team = game.getTeam(e.getEntity());
         Team team2 = game.getTeam(e.getEntity().getKiller());
         e.setDeathMessage(team == null || team2 == null ?
-                (team != null ? StringUtil.color(ChatColor.valueOf(team.getName()) + e.getEntity().getName() + "died.") : null) :
+                (team != null ? StringUtil.color(ChatColor.valueOf(team.getName()) + e.getEntity().getName() + " died.") : null) :
                 StringUtil.color(ChatColor.valueOf(team.getName()) + e.getEntity().getName() + " &bwas killed by " + ChatColor.valueOf(team2.getName()) + e.getEntity().getKiller().getName()));
         for(ItemStack i : e.getDrops())
             if(i != null && i.getType() != Material.AIR) e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), i);
         resetPlayer(e.getEntity(), false);
         game.setSpectator(e.getEntity());
+        if(game.canFinish()) game.finishGame();
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerChat(AsyncPlayerChatEvent e) {
+        e.setCancelled(true);
         if(game.isSpectator(e.getPlayer())) Messaging.sendSpectatorChat(e.getPlayer().getName(), e.getMessage());
-        else {
+        else if(game.getTeam(e.getPlayer()) != null && game.getStage() == GameStage.RUNNING) {
             Team team = game.getTeam(e.getPlayer());
-            if(team == null || game.getStage() != GameStage.RUNNING) return;
-            e.setCancelled(true);
             if(e.getMessage().startsWith("!"))
                 Messaging.sendGlobalChat(ChatColor.valueOf(team.getName()) + "" + e.getPlayer().getName(), e.getMessage().replaceFirst("!", ""));
             else Messaging.sendTeamChat(team, e.getMessage());
-        }
+        } else Messaging.sendChat(e.getPlayer(), e.getMessage());
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
@@ -137,6 +139,16 @@ public class PlayerListener implements Listener {
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerDropItem(PlayerDropItemEvent e) {
         if(game.isSpectator(e.getPlayer())) e.setCancelled(true);
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onHungerChange(FoodLevelChangeEvent e) {
+        if(game.getStage() != GameStage.RUNNING) e.setCancelled(true);
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onPing(ServerListPingEvent e) {
+        e.setMotd(StringUtil.color(game.getStage().asString()));
     }
 
     public static void resetPlayer(Player player, boolean doTeleport) {

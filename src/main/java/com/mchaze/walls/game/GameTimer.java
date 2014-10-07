@@ -88,7 +88,7 @@ public class GameTimer {
         if (gameTask != null) cancel();
         this.gameStage = gameStage;
         this.countdown = 0;
-        this.countdown2 = 0;
+        this.countdown2 = -1;
         if (gameStage.isRunnable()) run();
     }
 

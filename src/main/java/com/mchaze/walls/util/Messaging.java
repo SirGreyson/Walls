@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import java.util.UUID;
@@ -32,6 +33,10 @@ public class Messaging {
     public static void broadcast(String message) {
         if (BROADCAST_PREFIX == null) BROADCAST_PREFIX = Settings.BROADCAST_PREFIX.asString();
         Bukkit.broadcastMessage(StringUtil.color(BROADCAST_PREFIX + " " + message));
+    }
+
+    public static void sendChat(Player player, String message) {
+        Bukkit.broadcastMessage(StringUtil.color(player.getDisplayName().replace(player.getName(), "&8" + player.getName()) + ":&7 " + message));
     }
 
     public static void sendTeamChat(Team team, String message) {
