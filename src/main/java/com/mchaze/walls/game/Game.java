@@ -21,6 +21,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 public class Game {
@@ -191,8 +194,22 @@ public class Game {
     public void resetGame() {
         setStage(GameStage.RESETTING);
         for (Player player : Bukkit.getOnlinePlayers()) PlayerListener.resetPlayer(player, true);
+        kickToLobby();
         ArenaManager.getInstance().unloadArenaWorld(currentArena);
         Messaging.printInfo("Running Reset Command [" + Settings.RESET_COMMAND.asString() + "]");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Settings.RESET_COMMAND.asString());
+    }
+
+    private void kickToLobby() {
+        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(stream);
+        try {
+            out.writeUTF("Connect");
+            out.writeUTF("wallslobby");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for(Player player : Bukkit.getServer().getOnlinePlayers()) player.sendPluginMessage(plugin, "BungeeCord", stream.toByteArray());
     }
 }

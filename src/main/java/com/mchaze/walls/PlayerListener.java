@@ -114,6 +114,7 @@ public class PlayerListener implements Listener {
             if(i != null && i.getType() != Material.AIR) e.getEntity().getWorld().dropItem(e.getEntity().getLocation(), i);
         resetPlayer(e.getEntity(), false);
         game.setSpectator(e.getEntity());
+        game.updateGameBoard();
         if(game.canFinish()) game.finishGame();
     }
 

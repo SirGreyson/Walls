@@ -61,7 +61,7 @@ public class GameBoard {
     }
 
     public boolean isTeamFull(Team team) {
-        return team.getSize() >= Settings.TEAM_MAX_PLAYERS.asInt();
+        return team.getSize() >= Settings.TEAM_MAX_PLAYERS.asInt() || team.getSize() >= Bukkit.getOnlinePlayers().length / 4;
     }
 
     public Team getTeam(String teamID) {
@@ -81,10 +81,30 @@ public class GameBoard {
         return gameBoard.getTeam(selectedTeams.get(player.getUniqueId()));
     }
 
+    public static int getSelectedCount(Team team) {
+        int counter = 0;
+        Iterator<UUID> pIt = selectedTeams.keySet().iterator();
+        while(pIt.hasNext()) {
+            UUID uuid = pIt.next();
+            if(Bukkit.getPlayer(uuid) == null) pIt.remove();
+            else if(selectedTeams.get(uuid).equalsIgnoreCase(team.getName())) counter++;
+        }
+        return counter;
+    }
+
     public static void selectTeam(Player player, Team team) {
-        selectedTeams.put(player.getUniqueId(), team.getName());
-        player.closeInventory();
-        Messaging.send(player, "&aYou will now be on the " + team.getDisplayName());
+        int size = getSelectedCount(team);
+        if(selectedTeams.containsKey(player.getUniqueId()) && selectedTeams.get(player.getUniqueId()).equalsIgnoreCase(team.getName())) {
+            player.closeInventory();
+            Messaging.send(player, "&cYou have already selected this Team!");
+        } else if(size > Settings.TEAM_MAX_PLAYERS.asInt() || size >= Bukkit.getOnlinePlayers().length / 4) {
+            player.closeInventory();
+            Messaging.send(player, "&cSorry, this Team is already full. Choose another one or try again later");
+        } else {
+            selectedTeams.put(player.getUniqueId(), team.getName());
+            player.closeInventory();
+            Messaging.send(player, "&aYou will now be on the " + team.getDisplayName());
+        }
     }
 
     public boolean hasWinningTeam() {

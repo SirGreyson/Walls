@@ -42,7 +42,7 @@ public class StringUtil {
     }
 
     public static String formatTime(int time) {
-        return String.valueOf(time / 60 + ":") + (String.valueOf(time % 60).length() == 1 ? "0" + String.valueOf(time % 60) : String.valueOf(time % 60));
+        return String.valueOf(time / 60) /*(+ ":") + (String.valueOf(time % 60).length() == 1 ? "0" + String.valueOf(time % 60) : String.valueOf(time % 60))*/;
     }
 
     public static String parseItem(ItemStack input) {
@@ -53,13 +53,13 @@ public class StringUtil {
 
     public static ItemStack parseItemString(String input) {
         String[] args = input.split(":");
-        ItemStack output = new ItemStack(Material.valueOf(args[0]), asInt(args[1]));
-        if (args.length == 2) return output;
+        ItemStack output = new ItemStack(Material.valueOf(args[0]), asInt(args[1]), Short.valueOf(args[2]));
+        if (args.length <= 3) return output;
         ItemMeta meta = output.getItemMeta();
-        meta.setDisplayName(color(args[2]));
+        meta.setDisplayName(color(args[3]));
         List<String> lore = new ArrayList<String>();
-        if (args.length >= 4)
-            for(String loreLine : args[3].split("|")) lore.add(loreLine);
+        if (args.length >= 5)
+            for(String loreLine : args[4].split("|")) lore.add(loreLine);
         meta.setLore(colorAll(lore));
         output.setItemMeta(meta);
         return output;

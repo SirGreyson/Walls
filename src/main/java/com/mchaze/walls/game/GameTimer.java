@@ -54,7 +54,7 @@ public class GameTimer {
                 public void run() {
                     countdown--;
                     countdown2--;
-                    game.updateGameBoard();
+                    if(countdown % 60 == 0) game.updateGameBoard();
                     if (countdown <= 0) game.finishGame();
                     if(countdown2 <= -1) return;
                     else if(countdown2 == 0) game.doWallDrop();
