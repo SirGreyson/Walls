@@ -61,7 +61,7 @@ public class GameBoard {
     }
 
     public boolean isTeamFull(Team team) {
-        return team.getSize() >= Settings.TEAM_MAX_PLAYERS.asInt() || team.getSize() >= Bukkit.getOnlinePlayers().length / 4;
+        return team.getSize() >= Settings.TEAM_MAX_PLAYERS.asInt() || team.getSize() >= Bukkit.getOnlinePlayers().size() / 4;
     }
 
     public Team getTeam(String teamID) {
@@ -97,7 +97,7 @@ public class GameBoard {
         if(selectedTeams.containsKey(player.getUniqueId()) && selectedTeams.get(player.getUniqueId()).equalsIgnoreCase(team.getName())) {
             player.closeInventory();
             Messaging.send(player, "&cYou have already selected this Team!");
-        } else if(size > Settings.TEAM_MAX_PLAYERS.asInt() || size >= Bukkit.getOnlinePlayers().length / 4) {
+        } else if(size > Settings.TEAM_MAX_PLAYERS.asInt() || size >= Bukkit.getOnlinePlayers().size() / 4) {
             player.closeInventory();
             Messaging.send(player, "&cSorry, this Team is already full. Choose another one or try again later");
         } else {

@@ -117,7 +117,7 @@ public class Game {
     }
 
     public int getPlayersNeeded() {
-        return Settings.MIN_PLAYERS_TO_START.asInt() - Bukkit.getOnlinePlayers().length > 0 ? Settings.MIN_PLAYERS_TO_START.asInt() - Bukkit.getOnlinePlayers().length : 0;
+        return Settings.MIN_PLAYERS_TO_START.asInt() - Bukkit.getOnlinePlayers().size() > 0 ? Settings.MIN_PLAYERS_TO_START.asInt() - Bukkit.getOnlinePlayers().size() : 0;
     }
 
     public void addPlayer(Player player) {
@@ -142,7 +142,7 @@ public class Game {
     }
 
     public boolean canStart() {
-        return Bukkit.getOnlinePlayers().length >= Settings.MIN_PLAYERS_TO_START.asInt();
+        return Bukkit.getOnlinePlayers().size() >= Settings.MIN_PLAYERS_TO_START.asInt();
     }
 
     public void tryStart(boolean isForced) {

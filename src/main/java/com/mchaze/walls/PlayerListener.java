@@ -24,10 +24,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
@@ -134,6 +131,13 @@ public class PlayerListener implements Listener {
     public void onPistonExtend(BlockPistonExtendEvent e) {
         if(game.getStage() == GameStage.RUNNING && game.getCurrentArena().getWorldName().equalsIgnoreCase(e.getBlock().getWorld().getName()))
             for(Block block : e.getBlocks())
+                if(game.isProtectedWall(block)) e.setCancelled(true);
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onExplosion (EntityExplodeEvent e) {
+        if(game.getStage() == GameStage.RUNNING && game.getCurrentArena().getWorldName().equalsIgnoreCase(e.getEntity().getWorld().getName()))
+            for(Block block : e.blockList())
                 if(game.isProtectedWall(block)) e.setCancelled(true);
     }
 
